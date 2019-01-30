@@ -3,7 +3,7 @@ class DOG
   attr_accessor :name, :breed
   attr_reader :id
   
-  def initialize (name, breed, id=nil)
+  def initialize (name:, breed:, id:nil)
     @name=name
     @breed=breed
     @id=id
@@ -13,20 +13,16 @@ class DOG
         sql = <<-SQL
         INSERT INTO dogs VALUES (?, ?, ?)
         SQL
-
-        DB[:conn].execute(sql,@id,@name,@breed)
+        DB[:conn].execute(sql, id, name, breed)
         @id = DB[:conn].execute("SELECT last_insert_rowid() FROM dogs")[0][0]
-
         self
     end
 
     def update
         sql = <<-SQL
-        UPDATE dogs SET name = ?, breed = ?
-        WHERE id = ?
+        UPDATE dogs SET name = ?, breed = ? WHERE id = ?
         SQL
-
-        DB[:conn].execute(sql,@name,@breed,@id)
+        DB[:conn].execute(sql, name, breed, id)
     end
 
     def self.create(name:,breed:)
@@ -37,7 +33,6 @@ class DOG
         sql = <<-SQL
         SELECT * FROM dogs WHERE name = ?
         SQL
-
         self.new_from_db(DB[:conn].execute(sql, name).first)
     end
 
@@ -45,16 +40,13 @@ class DOG
         sql = <<-SQL
         SELECT * FROM dogs WHERE id = ? 
         SQL
-
         self.new_from_db(DB[:conn].execute(sql, id).first)
-
     end
 
     def self.find_or_create_by(name:,breed:)
         sql = <<-SQL
         SELECT * FROM dogs where name= ? and breed = ?
         SQL
-
         res=DB[:conn].execute(sql,name,breed)
         if res.length ==0 then
             self.new(name:name,breed:breed).save
@@ -71,7 +63,6 @@ class DOG
             breed TEXT
             )
         SQL
-
         DB[:conn].execute(sql)
     end
 
@@ -86,9 +77,6 @@ class DOG
         sql = <<-SQL
         DROP TABLE dogs
         SQL
-
         DB[:conn].execute(sql)
     end
-
-
 end 
